@@ -1,19 +1,25 @@
 #!/usr/bin/env bash
-# Installs nginx
-sudo apt-get update -y
-sudo apt-get install nginx -y
+# Customizes a 404-error_page
 
-# changes owner to current user to write
-sudo chown -R "$USER":"$USER" /var/www/html/
-sudo chown -R "$USER":"$USER" /etc/nginx/sites-available/
+# Updates Packages before performing installations
+sudo apt-get update
+sudo apt-get install -y nginx
 
-# configs output
+# Creates an index.html page
 echo "Hello World!" | sudo tee /var/www/html/index.html
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/custom_404.html
 
-# updates config file to redirect
-sed -i "/server_name _;/ a\\\trewrite ^/redirect_me https://www.youtube.com/watch?v=dQw4w9WgXcQ permanent;" /etc/nginx/sites-available/default
-sed -i "/server_name _;/ a\\\terror_page 404 /custom_404.html;" /etc/nginx/sites-available/default
+# Performs a "moved permanently redirection" (301)
+new_string="server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/besthor permanent;"
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
 
-# starts engine or restart
+# Creates a 404 Custom error page
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+new_string="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
+
+sudo sed -i "s/listen 80 default_server;/$new_string/" /etc/nginx/sites-enabled/default
+
+# Tests configurations for syntax errors
+sudo nginx -t
+
+# restarts nginx after implementing changes
 sudo service nginx restart
