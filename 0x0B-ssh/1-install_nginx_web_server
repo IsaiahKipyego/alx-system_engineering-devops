@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Installs nginx
+sudo apt-get update -y
+sudo apt-get install nginx -y
+
+# changes owner to current user to write
+sudo chown -R "$USER":"$USER" /var/www/html/
+sudo chown -R "$USER":"$USER" /etc/nginx/sites-available/
+
+# configures output
+echo "Hello World!" | sudo tee /var/www/html/index.html
+
+# updates config file to redirect
+sed -i "/server_name _;/ a\\\trewrite ^/redirect_me https://www.youtube.com/watch?v=dQw4w9WgXcQ permanent;" /etc/nginx/sites-available/default
+
+# starts engine or restart
+sudo service nginx restart
