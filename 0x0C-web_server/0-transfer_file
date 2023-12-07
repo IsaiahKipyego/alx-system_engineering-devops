@@ -1,12 +1,13 @@
- Bash script that transfers file from a client to the server.
-# Using cp linux command, take the following arguments
-# PATH_TO_FILE to be copied to server, USER on server IP of server
-# LOCATION to copy to on server and PATH_TO_IDENTITY_FILE for user auth
+#!/usr/bin/env bash
+# script copies a file from client to server using scp
+# and disables strict host key checking
 
-if [ $# -lt 4 ]
-	then
-		echo 'Usage: 0-transfer_file PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY'
-
-	else
-		scp -o StrictHostKeyChecking=no -i "$4" "$1" "$3"@"$2":~
+if [ "$#" -lt 3 ];
+then
+    echo "Usage: 0-transfer_file PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
+elif [ "$#" -lt 4 ];
+then
+    scp -o StrictHostKeyChecking=no "$1" "$3"@"$2":~/
+else
+    scp -o StrictHostKeyChecking=no -i "$4" "$1" "$3"@"$2":~/
 fi
