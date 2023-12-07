@@ -1,0 +1,26 @@
+global
+    daemon
+    maxconn 2048
+    tune.ssl.default-dh-param 2048
+
+defaults
+    mode http
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+    option forwardfor
+    option http-server-close
+
+frontend http_front
+    bind *:80
+    default_backend http_back
+
+frontend www-https
+    bind *:443 ssl crt /etc/letsencrypt/live/www.kipyego.tech/fullchain.pem
+    default_backend http_back
+
+backend http_back
+    redirect scheme https if !{ ssl_fc }
+    balance roundrobin
+    server web-01 18.204.6.193:80
+    server web-02 54.84.40.70:80
