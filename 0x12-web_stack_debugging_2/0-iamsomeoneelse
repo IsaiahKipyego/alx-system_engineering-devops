@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Bash script runing whoami command on first argument passed to it
+# first command passed to the script is registered user on system
+sudo -u "$1" whoami
